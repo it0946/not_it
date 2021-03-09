@@ -3,13 +3,21 @@ from discord.ext.commands.errors import ExtensionAlreadyLoaded, ExtensionNotFoun
 import json
 
 config = json.load(open('config.json', 'r'))
-startup_extensions = ['test_cog', 'command_reaction']
-bot = commands.Bot(command_prefix=commands.when_mentioned_or(config['prefix']))
+startup_extensions = ['test_cog', 'command_reaction', 'servers_cog']
+bot = commands.Bot(command_prefix=commands.when_mentioned_or(config['default_prefix']))
 
 async def isme(id: int): return(id == 273502808718704640)
 
-for e in startup_extensions:
-    bot.load_extension('cogs.{0}'.format(e))
+cogs = { # Bool for if a cog is unloadable
+    'main_cog': { 'startup': True, 'unloadable': False },
+    'servers_cog': { 'startup': True, 'unloadable': False },
+    'command_reaction': { 'startup': True, 'unloadable': True },
+    'eon': { 'startup': False, 'unloadable': True }
+}
+
+for cog in cogs:
+    if cogs[cog]['startup']:
+        bot.load_extension('cogs.{0}'.format(cog))
 
 # TODO: Implement a help command
 
@@ -17,31 +25,37 @@ for e in startup_extensions:
 async def cog(ctx):
     if not await isme(ctx.author.id): return
     if ctx.invoked_subcommand is None:
-        _cogs = ""
-        for item in startup_extensions: _cogs += '{0} '.format(item)
-        await ctx.reply('Available cogs: ```{0}```'.format(_cogs))
+        cogList = ""
+        for cog in cogs:
+            if cog[1]:
+                cogList += '{0}\n'.format(cog)
+        await ctx.send('Available cogs: ```{0}```'.format(cogList))
 
 @bot.event
 async def on_ready():
     print('Logged in as {0.user}'.format(bot)) 
 
 @cog.command()
-async def unload(ctx, ext):
+async def unload(ctx, cog):
     try:
-        print('{0.id} | {0}: unloaded {1}'.format(ctx.message.author, ext))
-        bot.unload_extension('cogs.' + ext)
+        if cogs[cog]['unloadable'] == True:
+            print('{0.id} | {0}: unloaded {1}'.format(ctx.message.author, cog))
+            bot.unload_extension('cogs.' + cog)
+        else:
+            await ctx.send('That cog cannot be unloaded')
     except ExtensionNotLoaded:
-        await ctx.reply('Error while unloading cog: Requested Cog is not loaded or found.')
+        await ctx.send('Error while unloading cog: Requested Cog is not loaded or found.')
 
 @cog.command()
-async def load(ctx, ext):
+async def load(ctx, cog):
     try:
-        print('{0.id} | {0}: loaded {1}'.format(ctx.message.author, ext))
-        bot.load_extension('cogs.' + ext)
+        print('{0.id} | {0}: loaded {1}'.format(ctx.message.author, cog))
+        bot.load_extension('cogs.' + cog)
     except ExtensionAlreadyLoaded:
-        await ctx.reply('Error while loading cog: Cog is already loaded.')
+        bot.reload_extension('cogs.{0}'.format(cog))
+        await ctx.send('`{0}` was already loaded so it was reloaded instead.'.format(cog))
     except ExtensionNotFound:
-        await ctx.reply('Error while loading cog: Requested Cog not found.')
+        await ctx.send('Error while loading cog: Requested Cog not found.')
 
 @cog.command()
 async def reload(ctx, ext):
@@ -49,6 +63,6 @@ async def reload(ctx, ext):
         print('{0.id} | {0}: reloaded {1}'.format(ctx.message.author, ext))
         bot.reload_extension('cogs.{0}'.format(ext))
     except ExtensionNotFound:
-        await ctx.reply('Error while reloading cog: Requested Cog not found.')
+        await ctx.send('Error while reloading cog: Requested Cog not found.')
 
 bot.run(config['token'])
