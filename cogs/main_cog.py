@@ -2,7 +2,7 @@ from discord.ext import commands
 from util.config import change_prefix
 import json
 
-class test_cog(commands.Cog):
+class main_cog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -32,4 +32,4 @@ class test_cog(commands.Cog):
         await ctx.reply('General kenobi')
 
 def setup(bot):
-    bot.add_cog(test_cog(bot))
+    bot.add_cog(main_cog(bot))
