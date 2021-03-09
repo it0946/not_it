@@ -16,6 +16,7 @@ class test_cog(commands.Cog):
             if not len(prefix) >= 4: 
                 await change_prefix(prefix)
                 self.bot.command_prefix = config['prefix'] = prefix
+                ctx.send('Success: The new bot prefix is `{0}`'.format(prefix))
             else: 
                 await ctx.send('Requested prefix is too long. Limit is 4 characters')
 

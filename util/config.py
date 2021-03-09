@@ -1,5 +1,4 @@
 import json
-#from main import bot # breaks this apparently?
 
 # Misc config functions to do with config.json  
 
