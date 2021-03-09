@@ -10,7 +10,9 @@ class command_reaction(commands.Cog):
             print('{0.guild}: {0.channel} | {0.author.id} {0.author}: Executed {0.command}'.format(ctx))
             await ctx.message.add_reaction('✅')
         
-    
+    # TODO: Figure out how to properly add a success and failure reaction 
+    # and respond to them correctly.
+
     #@commands.Cog.listener('on_command_error')
     #async def on_command_error(self, ctx):
     #    await ctx.message.add_reaction('❌')

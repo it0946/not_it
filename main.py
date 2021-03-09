@@ -11,6 +11,8 @@ async def isme(id: int): return(id == 273502808718704640)
 for e in startup_extensions:
     bot.load_extension('cogs.{0}'.format(e))
 
+# TODO: Implement a help command
+
 @bot.group()
 async def cog(ctx):
     if not await isme(ctx.author.id): return
