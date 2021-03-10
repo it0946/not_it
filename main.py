@@ -2,7 +2,6 @@ from discord.ext import commands
 from discord.ext.commands.errors import ExtensionAlreadyLoaded, ExtensionNotFound, ExtensionNotLoaded
 import json
 
-import discord
 from util.servers import add_server, server_exists, get_prefix
 
 config = json.load(open('config.json', 'r'))
