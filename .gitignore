@@ -1,4 +1,4 @@
-__pychache__
 config.json
 util/__pycache__/*.pyc
 cogs/__pycache__/*.pyc
+__pycache__
