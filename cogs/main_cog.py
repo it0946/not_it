@@ -1,5 +1,6 @@
+from logging import NullHandler
 from discord.ext import commands
-from util.config import change_prefix
+from util.servers import change_prefix, get_guild_prefix, get_prefix
 import json
 
 class main_cog(commands.Cog):
@@ -9,17 +10,17 @@ class main_cog(commands.Cog):
     # TODO: Figure out how to properly do permissions for commands
     @commands.command()
     async def prefix(self, ctx, prefix: str = None):
-        config = json.load(open('config.json', ))
+        server_config = json.load(open('servers.json', 'r'))
+        _prefix = await get_guild_prefix(ctx.guild.id)
         if prefix is None:
-            await ctx.send('The current prefix is: `{0}`, or you can ping the bot.'.format(config['prefix']))
+            await ctx.send(f'The current prefix is: `{prefix}`, or you can ping the bot.')
         else:
             if not len(prefix) > 4:
-                if prefix == config['prefix']:
+                if prefix == _prefix:
                      await ctx.send('New prefix cannot be the old prefix.')
                      return
-                await change_prefix(prefix)
-                self.bot.command_prefix = commands.when_mentioned_or(prefix)
-                await ctx.send('Success: The new bot prefix is `{0}`'.format(prefix))
+                await change_prefix(ctx.guild.id, prefix)
+                await ctx.send(f'Success: The new bot prefix is `{prefix}`')
             else: 
                 await ctx.send('Requested prefix is too long. Limit is 4 characters')
 

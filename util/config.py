@@ -20,11 +20,6 @@ async def addid(id: int): # Add an ID to the array
         newConfig['id'].append(id)
         await saveConfig(newConfig)
 
-async def change_prefix(newPrefix: str): # TODO: adapt to multi server
-    newConfig = config
-    newConfig['default_prefix'] = newPrefix
-    await saveConfig(newConfig)
-
 async def delid(id: int): # Remove an ID from the array
     if await id_exists(id):
         newConfig = config
