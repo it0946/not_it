@@ -1,14 +1,15 @@
+from util.Config import Config
 from discord.ext import commands
-from discord.ext.commands.errors import ExtensionAlreadyLoaded, ExtensionNotFound, ExtensionNotLoaded
+from discord.ext.commands.errors import CommandNotFound, ExtensionAlreadyLoaded, ExtensionNotFound, ExtensionNotLoaded
 import json
-
-from util.servers import add_server, server_exists, get_prefix
+from util.Servers import Servers
+# from util.servers import add_server, server_exists, get_prefix
 
 config = json.load(open('config.json', 'r'))
+servers = Servers
+_config = Config
+bot = commands.Bot(command_prefix=servers.get_prefix)
 
-bot = commands.Bot(command_prefix=get_prefix)
-
-async def isme(id: int): return(id == 273502808718704640)
 
 # If startup is true, it will be loaded on startup. If unloadable is false it cannot be unloaded.
 cogs = {  
@@ -25,16 +26,22 @@ for cog in cogs:
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user}') 
+    await _config.log_id(bot.user.id)
     for guild in bot.guilds: # Add guilds which the bot joined while offline  
-        if not await server_exists(guild.id):
-            await add_server(guild.id, guild.name, config['default_prefix'])
+        if not await servers.server_exists(guild.id):
+            await servers.add_server(guild.id, guild.name, config['default_prefix'])
             print(f'Added guild: {guild.name} to servers.json')
 
-# TODO: Implement a help command
+# TODO: Implement a help command. put on the side burner 
+
+@bot.event # Found out how to send error messages in chat
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandNotFound):
+        await ctx.send(f'Error: `{type(error)}`')
 
 @bot.group()
 async def cog(ctx):
-    if not await isme(ctx.author.id): return
+    if ctx.author.id == 273502808718704640: return
     if ctx.invoked_subcommand is None:
         cogList = ""
         for cog in cogs:
