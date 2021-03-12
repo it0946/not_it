@@ -1,1 +1,10 @@
-{"756067978180821103": {"name": "Bot Creation Testing", "server_prefix": "?"}, "783000594650103809": {"name": "DM's", "server_prefix": "?"}}
+{
+    "756067978180821103": {
+        "name": "Bot Creation Testing",
+        "server_prefix": "_"
+    },
+    "783000594650103809": {
+        "name": "DM's",
+        "server_prefix": "_"
+    }
+}
